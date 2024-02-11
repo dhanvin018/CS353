@@ -1,0 +1,91 @@
+.doctor-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.card {
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.date-column {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+.time-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.time-slot {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.time-slot.selected {
+  background-color: #28a745;
+  color: white;
+}
+
+.confirm-booking {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-top: 10px;
+  
+}
+
+.confirm-booking:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.user-reviews {
+  text-align: left;
+  width: calc(100% - 500px); /* Set the width with a 250px gap on both sides */
+  margin-left: 250px; /* Set left margin to create the gap */
+}
+
+.review {
+  margin-bottom: 20px;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.review-date {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.review-text {
+  margin-bottom: 0;
+  word-wrap: break-word;
+}
+
