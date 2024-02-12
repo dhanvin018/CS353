@@ -3,23 +3,21 @@ import './DoctorProfile.css';
 
 const DoctorProfile = () => {
   const [selectedSlots, setSelectedSlots] = useState({});
+  const [currentDateIndex, setCurrentDateIndex] = useState(0);
 
   const handleSlotSelection = (date, slot) => {
     setSelectedSlots((prevSelectedSlots) => {
       const updatedSelectedSlots = { ...prevSelectedSlots };
 
-      // If the slot is already selected, unselect it
       if (updatedSelectedSlots[date] === slot) {
         delete updatedSelectedSlots[date];
       } else {
-        // Deselect the previous selection on a different day
         for (const selectedDate in updatedSelectedSlots) {
           if (selectedDate !== date) {
             delete updatedSelectedSlots[selectedDate];
           }
         }
 
-        // Select the new slot
         updatedSelectedSlots[date] = slot;
       }
 
@@ -27,97 +25,202 @@ const DoctorProfile = () => {
     });
   };
 
+  
+const handleDateNavigation = (direction) => {
+  // const currentDate = new Date();
+  // const nextDate = new Date(currentDate);
+  // nextDate.setDate(nextDate.getDate() + direction);
+
+  setSelectedSlots({}); // Clear selected slots when navigating to a new date
+  if (direction === -1) {
+  setCurrentDateIndex((prevIndex) => (prevIndex + direction < 0 ? 0 : prevIndex + direction));
+}
+
+  else {
+    setCurrentDateIndex((prevIndex) => prevIndex + direction);
+  }
+  
+  
+};
+
+
+
   const handleConfirmBooking = () => {
-    // Access selected time slots for each date using selectedSlots state
-    console.log('Selected Slots:', selectedSlots);
-    // Add your booking confirmation logic here
+    if (Object.keys(selectedSlots).length > 0) {
+      console.log('Selected Slots:', selectedSlots);
+      // Add your booking confirmation logic here
+    } else {
+      console.log('Please select a time slot before confirming the booking.');
+      // Add logic to handle no selected slots
+    }
   };
 
   const renderTimeSlots = (date) => {
-    const timeSlots = [];
-    for (let hour = 10; hour <= 18; hour++) {
-      const slot = `${hour}:00 - ${hour + 1}:00`;
-      const isSelected = selectedSlots[date] === slot;
-      timeSlots.push(
-        <button
-          key={slot}
-          className={`time-slot ${isSelected ? 'selected' : ''}`}
-          onClick={() => handleSlotSelection(date, slot)}
-          disabled={isSelected}
-        >
-          {slot}
-        </button>
-      );
-    }
-    return timeSlots;
-  };
+  const timeSlots = [];
+  const sessions = [
+    { start: 10, end: 12, label: 'Morning session' },
+    { start: 14, end: 17, label: 'Afternoon session' },
+    { start: 18, end: 20, label: 'Evening session' },
+  ];
 
-  const renderDateRows = () => {
-    const dateRows = [];
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() + i);
-      const formattedDate = currentDate.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      });
-      dateRows.push(
-        <div key={formattedDate} className="date-row">
-          <div className="date-column">{formattedDate}</div>
-          <div className="time-slots">{renderTimeSlots(formattedDate)}</div>
-        </div>
-      );
+  sessions.forEach((session) => {
+    timeSlots.push(<div key={`session-divider-${session.label}`} className="session-divider">{session.label}</div>);
+
+    for (let hour = session.start; hour <= session.end; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const slot = `${hour}:${minute === 0 ? '00' : minute} - ${hour + (minute === 30 ? 1 : 0)}:${minute === 0 ? '30' : '00'}`;
+        const isSelected = selectedSlots[date] === slot;
+        timeSlots.push(
+          <button
+            key={slot}
+            className={`time-slot ${isSelected ? 'selected' : ''}`}
+            onClick={() => handleSlotSelection(date, slot)}
+            disabled={isSelected}
+          >
+            {slot}
+          </button>
+        );
+      }
     }
-    return dateRows;
-  };
+  });
+
+  return timeSlots;
+};
+
+  const renderDateRow = () => {
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() + currentDateIndex);
+
+  const formattedDate = currentDate.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+
+  return (
+    <div key={formattedDate} className="date-row">
+      <div className="date-navigation">
+        <button onClick={() => handleDateNavigation(-1)} className="nav-button">
+          {'<'}
+        </button>
+        <div className="current-date">{formattedDate}</div>
+        <button onClick={() => handleDateNavigation(1)} className="nav-button">
+          {'>'}
+        </button>
+      </div>
+      <div className="time-slots">{renderTimeSlots(formattedDate)}</div>
+    </div>
+  );
+};
 
   return (
     <div className="doctor-profile">
+      <div className="left-half">
       <div className="doctor-details card">
         <div className="card-body">
-          <h2 className="card-title">Dr. John Doe</h2>
-          <div className="row">
-            <div className="col-md-6">
-              <p>Contact: +123456789</p>
-              <p>Email: drjohndoe@example.com</p>
-              <p>Address: Clinic Address, City</p>
+          <div className="details-columns">
+            <div className="doctor-image-column">
+              <img src="src=client\src\doctorImage.webp" alt="Doctor" className="doctor-image" />
             </div>
-            <div className="col-md-6">
-              <p>Qualifications: MBBS, MD</p>
-              <p>Registration Number: ABC12345</p>
+            <div className="details-column">
+              <h2 className="card-title doctor-name">Dr. John Doe</h2>
+              <div className="details-columns">
+                <div className="details-column">
+                  <p>+123456789</p>
+                  <p>drjohndoe@example.com</p>
+                  <p>Clinic Address, City</p>
+                </div>
+                <div className="details-column">
+                  <p>MBBS, MD</p>
+                  <p>ABC12345</p>
+                </div>
+              </div>
+              <div className="doctor-description">
+              <p>
+                Dedicated and compassionate medical professional with expertise in [specialization].
+                Committed to providing exceptional patient care and promoting well-being.
+              </p>
+            </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="appointment-booking card">
-        <div className="card-body">
-          <h3 className="card-title">Book an Appointment</h3>
-          {renderDateRows()}
-          <button className="confirm-booking" onClick={handleConfirmBooking}>
-            Confirm Booking
-          </button>
-        </div>
-      </div>
-      <div className="user-reviews">
-        <h3 className="section-title">User Reviews</h3>
-        <div className="review">
-          <div className="user-info">
-            <p className="user-name">John Doe</p>
-            <p className="review-date">Feb 14, 2024</p>
+
+
+
+
+
+      <div className="user-reviews card">
+        <h3 className="card-title" id='userTitle'>User Reviews</h3>
+        <div className='parentReview'>
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">John Doe</span>
+              <span className="review-date">January 15, 2023</span>
+            </p>
+            <p className="review-content">Excellent service! Dr. John Doe is very knowledgeable and caring.</p>
           </div>
-          <p className="review-text">Great doctor! Highly recommend.</p>
-        </div>
-        <hr />
-        <div className="review">
-          <div className="user-info">
-            <p className="user-name">Jane Smith</p>
-            <p className="review-date">Feb 15, 2024</p>
+          <hr />
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">Jane Smith</span>
+              <span className="review-date">February 5, 2023</span>
+            </p>
+            <p className="review-content">I highly recommend Dr. Doe. The clinic staff is friendly and efficient.</p>
           </div>
-          <p className="review-text">Very knowledgeable and friendly staff.</p>
+          <hr />
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">Mark Johnson</span>
+              <span className="review-date">March 20, 2023</span>
+            </p>
+            <p className="review-content">Had a great experience. Dr. Doe patiently answered all my queries.</p>
+          </div>
+          <hr />
+
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">John Doe</span>
+              <span className="review-date">January 15, 2023</span>
+            </p>
+            <p className="review-content">Excellent service! Dr. John Doe is very knowledgeable and caring.</p>
+          </div>
+          <hr />
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">Jane Smith</span>
+              <span className="review-date">February 5, 2023</span>
+            </p>
+            <p className="review-content">I highly recommend Dr. Doe. The clinic staff is friendly and efficient.</p>
+          </div>
+          <hr />
+          <div className="review">
+            <p className="review-info">
+              <span className="reviewer-name">Mark Johnson</span>
+              <span className="review-date">March 20, 2023</span>
+            </p>
+            <p className="review-content">Had a great experience. Dr. Doe patiently answered all my queries.</p>
+          </div>
+          <hr />
         </div>
-        <hr />
+        
         {/* Add more reviews with the new structure */}
+      </div>
+
+
+      </div>
+
+    
+      <div className="right-half">
+        <div className="appointment-booking card">
+          <div className="card-body">
+            <h3 className="card-title">Book an Appointment</h3>
+            {renderDateRow()}
+            <button className="confirm-booking" onClick={handleConfirmBooking}>
+              Confirm Booking
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
